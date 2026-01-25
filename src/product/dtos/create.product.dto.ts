@@ -1,11 +1,27 @@
-import { IsNotEmpty, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class CreateProduct {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   @IsNotEmpty()
   name: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  @Min(1)
+  @IsOptional()
+  description?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
   price: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  stock: number;
+
+  image: string;
+
+  @Type(() => Number)
+  categoryId: number;
 }

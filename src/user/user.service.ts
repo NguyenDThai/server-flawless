@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dtos/createUser.dto';
 import bcrypt from 'bcrypt';
+import { UpdateUserRole } from 'src/user/dtos/updateRole.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,18 @@ export class UserService {
         name: body.name,
         email: body.email,
         password: hashedPassword,
-        role: 'user',
+        role: 'USER',
+      },
+    });
+  }
+
+  update(body: UpdateUserRole) {
+    const { email, role } = body;
+
+    return this.prisma.user.update({
+      where: { email },
+      data: {
+        role,
       },
     });
   }
