@@ -22,11 +22,17 @@ export class UserController {
     return this.userService.create(body);
   }
 
+  // Lấy thông tin người dùng để kiểm tra đăng nhập, role
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   getMe(@Req() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return req.user;
+  }
+
+  @Get()
+  getAll() {
+    return this.userService.getAll();
   }
 
   @Patch('/role')

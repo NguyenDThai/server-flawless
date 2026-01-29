@@ -31,4 +31,8 @@ export class UserService {
       },
     });
   }
+
+  getAll() {
+    return this.prisma.user.findMany();
+  }
 }
