@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -20,5 +21,10 @@ export class ProductController {
     @Body() body: CreateProduct,
   ) {
     return this.productService.create(body, file);
+  }
+
+  @Get()
+  allProduct() {
+    return this.productService.allProduct();
   }
 }

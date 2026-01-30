@@ -24,4 +24,17 @@ export class AuthController {
       user: result.user,
     };
   }
+
+  @Post('/logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+    });
+
+    return {
+      message: 'Đăng xuất thành công',
+    };
+  }
 }
