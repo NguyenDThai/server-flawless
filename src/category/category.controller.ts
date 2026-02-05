@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Delete, Param } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
@@ -16,5 +16,10 @@ export class CategoryController {
   findAllCate() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.categoryService.findAllCate();
+  }
+
+  @Delete('/:id')
+  deleteCateId(@Param('id') id: string) {
+    return this.categoryService.deleteCateId(Number(id));
   }
 }
