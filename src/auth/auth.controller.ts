@@ -12,11 +12,12 @@ export class AuthController {
     @Body() body: AuthLoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    const isProd = process.env.NODE_ENV === 'production';
     const result = await this.authService.login(body);
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
+      sameSite: isProd ? 'none' : 'lax',
+      secure: isProd ? true : false,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -27,10 +28,12 @@ export class AuthController {
 
   @Post('/logout')
   logout(@Res({ passthrough: true }) res: Response) {
+    const isProd = process.env.NODE_ENV === 'production';
+
     res.clearCookie('access_token', {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
+      sameSite: isProd ? 'none' : 'lax',
+      secure: isProd ? true : false,
     });
 
     return {
