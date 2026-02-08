@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Patch,
   Post,
   Req,
@@ -25,6 +26,12 @@ export class UserController {
   // Lấy thông tin người dùng để kiểm tra đăng nhập, role
   @UseGuards(JwtAuthGuard)
   @Get('/me')
+  @Header(
+    'Cache-Control',
+    'no-store, no-cache, must-revalidate, proxy-revalidate',
+  )
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   getMe(@Req() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return req.user;
