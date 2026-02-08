@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PingController } from './ping/ping.controller';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     CategoryModule,
     CloudinaryModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, PingController],
   providers: [AppService, PrismaService],
 })
 export class AppModule {}
