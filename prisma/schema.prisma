@@ -35,8 +35,11 @@ model Product {
   stock Int
   image String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   categoryId Int
   category Categories @relation(fields: [categoryId], references: [id])
+
+  isFeatured Boolean @default(false)
 }
 
 model Categories {
