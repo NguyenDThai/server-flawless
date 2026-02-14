@@ -1,5 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class UpdateProduct {
   @IsNotEmpty()
@@ -23,6 +29,8 @@ export class UpdateProduct {
   image: string;
 
   @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   isFeatured?: boolean;
 
   @Type(() => Number)

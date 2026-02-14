@@ -26,6 +26,7 @@ async function bootstrap() {
         });
         return new BadRequestException(result);
       },
+      transform: true,
     }),
   );
   await app.listen(process.env.PORT ?? 4000);

@@ -30,6 +30,11 @@ export class ProductController {
   allProduct() {
     return this.productService.allProduct();
   }
+  // Lấy tất cả sản phẩm có isFeature true để hiển thị sản phẩm mới về
+  @Get('/feature')
+  featuredProduct() {
+    return this.productService.featuredProduct();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

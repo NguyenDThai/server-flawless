@@ -31,7 +31,7 @@ export class ProductService {
     });
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     const product = this.prisma.product.findUnique({
       where: { id },
       include: {
@@ -65,6 +65,18 @@ export class ProductService {
     return this.prisma.product.update({
       where: { id },
       data: { ...body, ...(imageUrl && { image: imageUrl }) },
+    });
+  }
+
+  featuredProduct() {
+    return this.prisma.product.findMany({
+      where: {
+        isFeatured: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 8,
     });
   }
 }
