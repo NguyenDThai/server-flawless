@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PingController } from './ping/ping.controller';
+import { CartController } from './cart/cart.controller';
+import { CartService } from 'src/cart/cart.service';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { PingController } from './ping/ping.controller';
     CategoryModule,
     CloudinaryModule,
   ],
-  controllers: [AppController, PingController],
-  providers: [AppService, PrismaService],
+  controllers: [AppController, PingController, CartController],
+  providers: [AppService, PrismaService, CartService],
 })
 export class AppModule {}
