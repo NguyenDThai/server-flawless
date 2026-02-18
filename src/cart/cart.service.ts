@@ -73,6 +73,8 @@ export class CartService {
     });
   }
 
+  // Hien thi san pham trong gio hang
+
   async findAllProductInCart(userId: number) {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -97,9 +99,29 @@ export class CartService {
       return total + Number(item.product.price) * item.quantity;
     }, 0);
 
+    // Tinh tong so luong san pham
+    const totalQuantity = cart.items.reduce((total, item) => {
+      return total + item.quantity;
+    }, 0);
+
     return {
       ...cart,
       totalAmount,
+      totalQuantity,
     };
+  }
+
+  // Xoa san pham
+  async removeItemFromCart(userId: number, productId: number) {
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    if (!cart) {
+      throw new NotFoundException('Cart not found');
+    }
+
+    await this.prisma.cartItem.deleteMany({
+      where: { cartId: cart.id, productId: productId },
+    });
+
+    return this.findAllProductInCart(userId);
   }
 }

@@ -2,7 +2,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { AddToCartDto } from 'src/cart/dtos/AddToCartDto.dto';
 import { CartService } from './cart.service';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @Controller('cart')
@@ -10,7 +20,7 @@ export class CartController {
   constructor(private cartService: CartService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('/add')
+  @Post('add')
   async addToCart(@Req() req, @Body() dto: AddToCartDto) {
     const userId = req.user.id;
 
@@ -22,5 +32,15 @@ export class CartController {
   findAllProductInCart(@Req() req) {
     const userId = req.user.id;
     return this.cartService.findAllProductInCart(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('remove/:productId')
+  async removeItemFromCart(
+    @Req() req,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    const userId = req.user.id;
+    return this.cartService.removeItemFromCart(userId, productId);
   }
 }
