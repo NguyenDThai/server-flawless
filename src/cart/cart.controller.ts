@@ -9,6 +9,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -42,5 +43,19 @@ export class CartController {
   ) {
     const userId = req.user.id;
     return this.cartService.removeItemFromCart(userId, productId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('increase/:productId')
+  increase(@Req() req, @Param('productId', ParseIntPipe) productId: number) {
+    const userId = req.user.id;
+    return this.cartService.increaseQuantity(userId, productId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('decrease/:productId')
+  decrease(@Req() req, @Param('productId', ParseIntPipe) productId: number) {
+    const userId = req.user.id;
+    return this.cartService.decreaseQuantity(userId, productId);
   }
 }

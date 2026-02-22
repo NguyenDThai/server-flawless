@@ -80,6 +80,9 @@ export class CartService {
       where: { userId },
       include: {
         items: {
+          orderBy: {
+            id: 'asc',
+          },
           include: {
             product: true,
           },
@@ -121,6 +124,58 @@ export class CartService {
     await this.prisma.cartItem.deleteMany({
       where: { cartId: cart.id, productId: productId },
     });
+
+    return this.findAllProductInCart(userId);
+  }
+
+  // Tang san pham
+  async increaseQuantity(userId: number, productId: number) {
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+
+    if (!cart) {
+      throw new NotFoundException('Cart not found');
+    }
+
+    await this.prisma.cartItem.update({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
+        },
+      },
+      data: {
+        quantity: {
+          increment: 1,
+        },
+      },
+    });
+
+    return this.findAllProductInCart(userId);
+  }
+
+  // Giam san pham
+  async decreaseQuantity(userId: number, productId: number) {
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    if (!cart) {
+      throw new NotFoundException('Cart not found');
+    }
+    const cartItem = await this.prisma.cartItem.findUnique({
+      where: { cartId_productId: { cartId: cart.id, productId } },
+    });
+
+    if (!cartItem) {
+      throw new NotFoundException('Item not found');
+    }
+    if (cartItem.quantity <= 1) {
+      await this.prisma.cartItem.delete({
+        where: { cartId_productId: { cartId: cart.id, productId } },
+      });
+    } else {
+      await this.prisma.cartItem.update({
+        where: { cartId_productId: { cartId: cart.id, productId } },
+        data: { quantity: { decrement: 1 } },
+      });
+    }
 
     return this.findAllProductInCart(userId);
   }
