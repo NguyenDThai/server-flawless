@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import slugify from 'slugify';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProduct } from 'src/product/dtos/create.product.dto';
@@ -19,6 +20,7 @@ export class ProductService {
         ...body,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         image: uploadResult,
+        slug: slugify(body.name, { lower: true }),
       },
     });
   }
