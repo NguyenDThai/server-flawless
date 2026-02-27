@@ -68,6 +68,7 @@ export class ProductService {
     });
   }
 
+  // San pham noi bat
   featuredProduct() {
     return this.prisma.product.findMany({
       where: {
@@ -77,6 +78,13 @@ export class ProductService {
         createdAt: 'desc',
       },
       take: 8,
+    });
+  }
+
+  async findBySlug(slug: string) {
+    return this.prisma.product.findUnique({
+      where: { slug },
+      include: { category: true },
     });
   }
 }

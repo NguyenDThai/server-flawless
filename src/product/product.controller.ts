@@ -50,4 +50,9 @@ export class ProductController {
   ) {
     return this.productService.update(Number(id), body, file);
   }
+
+  @Get('/detail/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.productService.findBySlug(slug);
+  }
 }
