@@ -19,6 +19,11 @@ enum Role {
   ADMIN
 }
 
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
 model User {
   id Int @id @default(autoincrement())
   name String
@@ -67,4 +72,21 @@ model CartItem {
   cart Cart @relation(fields: [cartId], references: [id])
   product Product @relation(fields: [productId], references: [id])
   @@unique([cartId, productId])  //Khong trung san pham trong gio hang
+}
+
+model Discount {
+  id Int @id @default(autoincrement())
+  code String @unique
+  type DiscountType
+  value Float
+  minAmount Float?
+  maxDiscount Float?
+  quantity Int
+  usedCount Int @default(0)
+  startDate DateTime
+  endDate DateTime
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

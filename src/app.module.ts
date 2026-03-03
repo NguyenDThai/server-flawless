@@ -12,6 +12,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PingController } from './ping/ping.controller';
 import { CartController } from './cart/cart.controller';
 import { CartService } from 'src/cart/cart.service';
+import { DiscountModule } from './discount/discount.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CartService } from 'src/cart/cart.service';
     AuthModule,
     CategoryModule,
     CloudinaryModule,
+    DiscountModule,
   ],
   controllers: [AppController, PingController, CartController],
   providers: [AppService, PrismaService, CartService],
