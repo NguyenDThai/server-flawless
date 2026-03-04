@@ -32,6 +32,9 @@ export class CreateDiscountDto {
   @IsNumber()
   quantity: number;
 
+  @IsOptional()
+  isActive?: boolean;
+
   @IsDateString()
   startDate: string;
 
