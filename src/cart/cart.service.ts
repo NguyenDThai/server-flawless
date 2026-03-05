@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   BadRequestException,
   Injectable,
@@ -178,5 +182,78 @@ export class CartService {
     }
 
     return this.findAllProductInCart(userId);
+  }
+
+  // Áp dụng mã giảm giá cho đơn hàng
+  async applyDiscount(code: string, userId: number) {
+    const cart = await this.prisma.cart.findFirst({
+      where: { userId },
+      include: {
+        items: { include: { product: true } },
+        discount: true,
+      },
+    });
+
+    if (!cart || cart.items.length === 0) {
+      throw new BadRequestException('Cart is empty');
+    }
+
+    const subtotal = cart.items.reduce((sum, item) => {
+      return sum + Number(item.product.price) * item.quantity;
+    }, 0);
+
+    const discount = await this.prisma.discount.findUnique({ where: { code } });
+
+    if (!discount) {
+      throw new BadRequestException('Invalid discount code ');
+    }
+
+    if (!discount.isActive) {
+      throw new BadRequestException('Discount is not active');
+    }
+
+    const now = new Date();
+    if (now < discount.startDate || now > discount.endDate) {
+      throw new BadRequestException('Discount expired');
+    }
+
+    if (discount.minAmount && subtotal < discount.minAmount) {
+      throw new BadRequestException(`Minimum order is ${discount.minAmount}`);
+    }
+
+    let discountAmount = 0;
+    if (discount.type === 'PERCENT') {
+      discountAmount = (subtotal * discount.value) / 100;
+
+      if (discount.maxDiscount) {
+        discountAmount = Math.min(discountAmount, discount.maxDiscount);
+      }
+    } else {
+      discountAmount = discount.value;
+    }
+
+    const total = subtotal - discountAmount;
+
+    await this.prisma.cart.update({
+      where: { id: cart.id },
+      data: { discountId: discount.id },
+    });
+
+    const updatedCart = await this.prisma.cart.findUnique({
+      where: { id: cart.id },
+      include: {
+        items: {
+          include: { product: true },
+        },
+        discount: true,
+      },
+    });
+
+    return {
+      cart: updatedCart,
+      subtotal,
+      discountAmount,
+      total: total < 0 ? 0 : total,
+    };
   }
 }

@@ -15,6 +15,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { ApplyDiscountDto } from 'src/cart/dtos/ApplyDiscountDto.dto';
 
 @Controller('cart')
 export class CartController {
@@ -57,5 +58,12 @@ export class CartController {
   decrease(@Req() req, @Param('productId', ParseIntPipe) productId: number) {
     const userId = req.user.id;
     return this.cartService.decreaseQuantity(userId, productId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('apply-discount')
+  appDiscount(@Req() req, @Body() dto: ApplyDiscountDto) {
+    const userId = req.user.id;
+    return this.cartService.applyDiscount(dto.code, userId);
   }
 }
