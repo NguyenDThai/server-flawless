@@ -205,20 +205,20 @@ export class CartService {
     const discount = await this.prisma.discount.findUnique({ where: { code } });
 
     if (!discount) {
-      throw new BadRequestException('Invalid discount code ');
+      throw new BadRequestException('Mã giảm giá không hợp lệ');
     }
 
     if (!discount.isActive) {
-      throw new BadRequestException('Discount is not active');
+      throw new BadRequestException('Mã giảm giá không hoạt động');
     }
 
     const now = new Date();
     if (now < discount.startDate || now > discount.endDate) {
-      throw new BadRequestException('Discount expired');
+      throw new BadRequestException('Mã giảm giá đã hết hạn');
     }
 
     if (discount.minAmount && subtotal < discount.minAmount) {
-      throw new BadRequestException(`Minimum order is ${discount.minAmount}`);
+      throw new BadRequestException(`Đơn hàng tối thiểu ${discount.minAmount}`);
     }
 
     let discountAmount = 0;
