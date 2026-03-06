@@ -66,4 +66,11 @@ export class CartController {
     const userId = req.user.id;
     return this.cartService.applyDiscount(dto.code, userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('remove-discount')
+  removeDiscount(@Req() req) {
+    const userId = req.user.id;
+    return this.cartService.removeDiscount(userId);
+  }
 }

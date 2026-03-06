@@ -256,4 +256,22 @@ export class CartService {
       total: total < 0 ? 0 : total,
     };
   }
+
+  // Xóa mã giảm giá
+  async removeDiscount(userId: number) {
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+
+    if (!cart) {
+      throw new BadRequestException('Cart is empty');
+    }
+
+    await this.prisma.cart.update({
+      where: { id: cart.id },
+      data: { discountId: null },
+    });
+
+    return {
+      message: 'Discount remove',
+    };
+  }
 }
