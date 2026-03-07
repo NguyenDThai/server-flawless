@@ -84,9 +84,23 @@ export class ProductService {
   }
 
   async findBySlug(slug: string) {
-    return this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { slug },
       include: { category: true },
     });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const relatedProducts = await this.prisma.product.findMany({
+      where: { categoryId: product.categoryId, id: { not: product.id } },
+      take: 4,
+    });
+
+    return {
+      product,
+      relatedProducts,
+    };
   }
 }

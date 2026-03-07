@@ -11,7 +11,22 @@ export class DiscountService {
   }
 
   async findAll() {
-    return this.prisma.discount.findMany();
+    const discount = await this.prisma.discount.findMany();
+
+    const now = new Date();
+    return discount.map((d) => {
+      let status = 'active';
+      if (now < d.startDate) {
+        status = 'scheduled';
+      } else if (now > d.endDate) {
+        status = 'expired';
+      }
+
+      return {
+        ...d,
+        status,
+      };
+    });
   }
 
   async update(id: number, dto: Partial<CreateDiscountDto>) {
