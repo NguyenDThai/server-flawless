@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDiscountDto } from 'src/discount/dtos/create-discount.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -30,6 +30,34 @@ export class DiscountService {
   }
 
   async update(id: number, dto: Partial<CreateDiscountDto>) {
+    const discount = await this.prisma.discount.findUnique({ where: { id } });
+
+    if (!discount) {
+      throw new NotFoundException('Discount not found');
+    }
+
+    const now = new Date();
+
+    let status = 'active';
+    if (!discount.isActive) {
+      status = 'disabled';
+    } else if (now < discount.startDate) {
+      status = 'scheduled';
+    } else if (now > discount.endDate) {
+      status = 'expired';
+    }
+
+    // Nếu status là lịch trình thì cho sửa toàn bộ mã, còn lại thì chỉ cho sửa 3 field
+    if (status !== 'scheduled') {
+      const allowedFields = ['quantity', 'endDate', 'isActive'];
+
+      const filteredDto = Object.fromEntries(
+        Object.entries(dto).filter(([key]) => allowedFields.includes(key)),
+      );
+
+      return this.prisma.discount.update({ where: { id }, data: filteredDto });
+    }
+
     return this.prisma.discount.update({ where: { id }, data: dto });
   }
 
