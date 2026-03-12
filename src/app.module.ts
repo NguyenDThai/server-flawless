@@ -13,6 +13,7 @@ import { PingController } from './ping/ping.controller';
 import { CartController } from './cart/cart.controller';
 import { CartService } from 'src/cart/cart.service';
 import { DiscountModule } from './discount/discount.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DiscountModule } from './discount/discount.module';
     CategoryModule,
     CloudinaryModule,
     DiscountModule,
+    FeedbackModule,
   ],
   controllers: [AppController, PingController, CartController],
   providers: [AppService, PrismaService, CartService],

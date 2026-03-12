@@ -93,3 +93,13 @@ model Discount {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model FeedBack {
+  id Int @id @default(autoincrement())
+  email String
+  name String
+  comment String
+  // Đã đọc hay chưa
+  isRead Boolean @default(false)
+  createdAt DateTime @default(now())
+}
