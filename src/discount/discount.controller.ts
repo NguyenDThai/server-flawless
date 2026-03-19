@@ -24,6 +24,11 @@ export class DiscountController {
     return this.discountService.findAll();
   }
 
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    return this.discountService.findById(Number(id));
+  }
+
   @Patch(':id')
   async update(
     @Param('id') id: string,

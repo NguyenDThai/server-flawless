@@ -29,6 +29,10 @@ export class DiscountService {
     });
   }
 
+  async findById(id: number) {
+    return this.prisma.discount.findUnique({ where: { id } });
+  }
+
   async update(id: number, dto: Partial<CreateDiscountDto>) {
     const discount = await this.prisma.discount.findUnique({ where: { id } });
 

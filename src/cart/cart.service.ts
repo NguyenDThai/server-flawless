@@ -91,6 +91,7 @@ export class CartService {
             product: true,
           },
         },
+        discount: true,
       },
     });
 
@@ -98,6 +99,9 @@ export class CartService {
       return {
         item: [],
         totalAmount: 0,
+        totalQuantity: 0,
+        discountAmount: 0,
+        finalAmount: 0,
       };
     }
 
@@ -111,10 +115,33 @@ export class CartService {
       return total + item.quantity;
     }, 0);
 
+    let discountAmount = 0;
+    if (cart.discount) {
+      const { type, maxDiscount, value, minAmount } = cart.discount;
+
+      if (minAmount && totalAmount < minAmount) {
+        discountAmount = 0;
+      } else {
+        if (type === 'PERCENT') {
+          const percentDiscount = (totalAmount * value) / 100;
+          discountAmount = Math.min(
+            percentDiscount,
+            maxDiscount ?? percentDiscount,
+          );
+        } else {
+          discountAmount = value;
+        }
+      }
+    }
+
+    // Tinh tong sau giam
+    const finalAmount = Math.max(totalAmount - discountAmount, 0);
     return {
       ...cart,
       totalAmount,
       totalQuantity,
+      discountAmount,
+      finalAmount,
     };
   }
 
@@ -190,7 +217,6 @@ export class CartService {
       where: { userId },
       include: {
         items: { include: { product: true } },
-        discount: true,
       },
     });
 
@@ -202,7 +228,9 @@ export class CartService {
       return sum + Number(item.product.price) * item.quantity;
     }, 0);
 
-    const discount = await this.prisma.discount.findUnique({ where: { code } });
+    const discount = await this.prisma.discount.findUnique({
+      where: { code },
+    });
 
     if (!discount) {
       throw new BadRequestException('Mã giảm giá không hợp lệ');
@@ -221,39 +249,17 @@ export class CartService {
       throw new BadRequestException(`Đơn hàng tối thiểu ${discount.minAmount}`);
     }
 
-    let discountAmount = 0;
-    if (discount.type === 'PERCENT') {
-      discountAmount = (subtotal * discount.value) / 100;
-
-      if (discount.maxDiscount) {
-        discountAmount = Math.min(discountAmount, discount.maxDiscount);
-      }
-    } else {
-      discountAmount = discount.value;
-    }
-
-    const total = subtotal - discountAmount;
-
+    // ✅ CHỈ LƯU discountId
     await this.prisma.cart.update({
       where: { id: cart.id },
-      data: { discountId: discount.id },
-    });
-
-    const updatedCart = await this.prisma.cart.findUnique({
-      where: { id: cart.id },
-      include: {
-        items: {
-          include: { product: true },
-        },
-        discount: true,
+      data: {
+        discountId: discount.id,
       },
     });
 
+    // ✅ TRẢ VỀ CART MỚI (để FE gọi lại getCart)
     return {
-      cart: updatedCart,
-      subtotal,
-      discountAmount,
-      total: total < 0 ? 0 : total,
+      message: 'Áp dụng mã giảm giá thành công',
     };
   }
 

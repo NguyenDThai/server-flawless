@@ -24,6 +24,19 @@ enum DiscountType {
   FIXED
 }
 
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  ONLINE
+}
+
 model User {
   id Int @id @default(autoincrement())
   name String
@@ -31,6 +44,7 @@ model User {
   password String
   role Role @default(USER)
   cart Cart?
+  orders Order[]
 }
 
 model Product {
@@ -48,6 +62,7 @@ model Product {
 
   isFeatured Boolean @default(false)
   cartItem CartItem[]
+  orderItems OrderItem[]
 }
 
 model Categories {
@@ -102,4 +117,34 @@ model FeedBack {
   // Đã đọc hay chưa
   isRead Boolean @default(false)
   createdAt DateTime @default(now())
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  totalAmount Decimal @db.Decimal(10,2)
+  status OrderStatus @default(PENDING)
+  paymentMethod PaymentMethod
+
+  receiverName String
+  receiverPhone String
+  shipppingAddress String
+  note String?
+
+  createdAt DateTime @default(now())
+  
+  items OrderItem[]
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+  orderId Int
+  productId Int
+  quantity Int
+  price Decimal
+
+  order Order @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])  
 }

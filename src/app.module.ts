@@ -14,6 +14,7 @@ import { CartController } from './cart/cart.controller';
 import { CartService } from 'src/cart/cart.service';
 import { DiscountModule } from './discount/discount.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     CloudinaryModule,
     DiscountModule,
     FeedbackModule,
+    OrdersModule,
   ],
   controllers: [AppController, PingController, CartController],
   providers: [AppService, PrismaService, CartService],
